@@ -17,11 +17,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>foo</td>
-              <td>bar</td>
-              <td>foobar</td>
-              <td>foobarbaz</td>
+            <tr v-for="(stock, index) in stocks" :key="index">
+              <td>{{ stock.symb }}</td>
+              <td>{{ stock.curr_price }}</td>
+              <td>{{ stock.yest_price }}</td>
+              <td>{{ stock.curr_price - stock.yest_price }}</td>
               <td>
                 <div class="btn-group" role="group">
                   <button type="button" class="btn btn-danger btn-sm">Sell</button>
@@ -34,3 +34,31 @@
     </div>
   </div>
 </template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      stocks: [],
+    };
+  },
+  methods: {
+    getStocks() {
+      const path = 'http://localhost:5000/stocks';
+      axios.get(path)
+        .then((res) => {
+          this.stocks = res.data.stocks;
+        })
+        .catch((error) => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    },
+  },
+  created() {
+    this.getStocks();
+  },
+};
+</script>
