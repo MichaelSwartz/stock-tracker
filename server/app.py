@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 
@@ -35,12 +35,20 @@ STOCKS = [
 def ping_pong():
     return jsonify('pong!')
 
-@app.route('/stocks', methods=['GET'])
+@app.route('/stocks', methods=['GET', 'POST'])
 def all_stocks():
-    return jsonify({
-        'status': 'success',
-        'stocks': STOCKS
-    })
+    response_object = {'status': 'success'}
+    if request.method == 'POST':
+        post_data = request.get_json()
+        STOCKS.append({
+            'symb': post_data.get('symb'),
+            'curr_price': post_data.get('curr_price'),
+            'yest_price': post_data.get('yest_price')
+        })
+        response_object['message'] = 'Stock added!'
+    else:
+        response_object['stocks'] = STOCKS
+    return jsonify(response_object)
 
 
 if __name__ == '__main__':
